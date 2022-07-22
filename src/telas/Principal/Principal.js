@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Animated, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { auth } from '../../../firebase';
+
+import firebase from '../../../firebaseconfig';
 
 import { GlobalContext } from '../../contexts/GlobalContext';
 
@@ -38,7 +39,7 @@ export default function Principal() {
 
   const loginSair = () => {
 
-    auth
+    firebase.auth()
     .signOut()
     .then(() => {
         setUsuario('')

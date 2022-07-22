@@ -1,10 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Text,View,TouchableOpacity, StyleSheet, LogBox } from 'react-native'
 import { Avatar, Button, Card, Title, Paragraph,TextInput as Input } from 'react-native-paper';
-import { auth } from '../../../firebase';
+
 import { GlobalContext } from '../../contexts/GlobalContext';
 import { useNavigation } from '@react-navigation/native';
 
+import firebase from '../../../firebaseconfig';
+
+
+import { ref, set, update, onValue, remove } from "firebase/database";
 
 LogBox.ignoreLogs(["AsyncStorage has been extracted from react-native core and will be removed in a future release. It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'"]);
 
@@ -12,7 +16,6 @@ function TextInput({ errorText, description, ...props }) {
     return (
       <View style={styles.container}>
         <Input
-          style={styles.input}
           selectionColor={'#5359D1'}
           underlineColor="transparent"
           mode="outlined"
@@ -29,44 +32,74 @@ function TextInput({ errorText, description, ...props }) {
 
 export default function Login(){
 
+    
+
     const navigation = useNavigation();
-    const {usuario, setUsuario, setCurrentTab } = useContext(GlobalContext)
+    const {idUsuario, setIdUsuario, usuario, setUsuario, setCurrentTab } = useContext(GlobalContext)
     const [email,setEmail] = useState('')
     const [password,setPassword] = useState('')
-    
+    const [secureTextEntry, setSecureTextEntry] = useState(true);
+
     useEffect(() => {
       
       setCurrentTab("Login")
-      setUsuario(auth.currentUser?.email)
+      setIdUsuario(firebase.auth.currentUser?.uid)
+      setUsuario(firebase.auth.currentUser?.email)
       
+      console.log(idUsuario)
+
     },[])
 
 
 
     const novoUsuario = () => {
-      auth
-      .createUserWithEmailAndPassword(email,password)
-      .then(userCredentials => {
-        const user = userCredentials.user;
-        alert("Usuário cadastrado com sucesso!")
-      })
-      .catch(error => alert(error.message))
+      
+
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+    // Signed in
+    console.log("1")
+    let user = userCredential.user;
+    console.log(user)
+    // ...
+  })
+  .catch((error) => {
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    // ..
+    console.log(errorMessage)
+  });
+
+      
+      //auth
+      //.createUserWithEmailAndPassword(email,password)
+      //.then(userCredentials => {
+//        const user = userCredentials.user;
+        //alert("Usuário cadastrado com sucesso!")
+      //})
+      //.catch(error => alert(error.message))
     }
 
     const loginUsuario = () => {
 
-      auth
-      .signInWithEmailAndPassword(email,password)
-      .then(userCredentials => {
-        const user = userCredentials.user;
+      firebase.auth().signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+    // Signed in
+        let user = userCredential.user;
+        setIdUsuario(user.uid)
         setUsuario(user.email)
-        navigation.navigate('Principal', {})
+        console.log(idUsuario)
+        //navigation.navigate('Principal', {})
+    // ...
       })
-      .catch(error => alert(error.message))
+      .catch((error) => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+      });
+
+
     }
 
-
-    
 
 
     return <>
@@ -81,7 +114,14 @@ export default function Login(){
         label="Senha"
         returnKeyType="done"
         onChangeText={text => setPassword(text)}
-        secureTextEntry
+        secureTextEntry={secureTextEntry}
+        right={<Input.Icon
+          name="eye"
+          onPress={() => {
+            setSecureTextEntry(!secureTextEntry);
+            return false;
+          }}
+        />}
       />
       <View style={styles.forgotPassword}>
         <TouchableOpacity>
@@ -129,7 +169,7 @@ const styles = StyleSheet.create({
         marginVertical: 12,
       },
       input: {
-        //backgroundColor: styles.colors.surface,
+        
       },
       description: {
         fontSize: 13,
@@ -144,4 +184,5 @@ const styles = StyleSheet.create({
       botao:{
         backgroundColor:'#5359D1',
       },
+      
   })

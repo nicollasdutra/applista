@@ -2,15 +2,46 @@ import React, { useContext, useEffect } from 'react'
 import { Text, StyleSheet,TouchableOpacity,View } from 'react-native'
 import { GlobalContext } from '../../contexts/GlobalContext'
 
+import firebase from '../../../firebaseconfig';
+
+
 export default function Listas(){
 
+  const database = firebase.firestore()
 
-  const {usuario, setUsuario, setCurrentTab } = useContext(GlobalContext)
+  const {idUsuario, usuario, setUsuario, setCurrentTab } = useContext(GlobalContext)
     
     useEffect(() => {
       
       setCurrentTab("Listas")
+      console.log(idUsuario)
+
+
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+       
+          let uid = user.uid;
+          
+          console.log(uid)
+
+          
+
+
+        }
+      });
+
       
+      database.collection("users").onSnapshot((query) => {
+        const list = []
+        query.forEach((doc) => {
+          list.push({...doc.data(), id: doc.id})
+      
+          console.log(list)
+        })
+      })
+
+
+
     },[])
 
     return <>
