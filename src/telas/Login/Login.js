@@ -39,6 +39,7 @@ export default function Login(){
     const [email,setEmail] = useState('')
     const [password,setPassword] = useState('')
     const [secureTextEntry, setSecureTextEntry] = useState(true);
+    const database = firebase.firestore()
 
     useEffect(() => {
       
@@ -51,35 +52,7 @@ export default function Login(){
     },[])
 
 
-
-    const novoUsuario = () => {
-      
-
-      firebase.auth().createUserWithEmailAndPassword(email, password)
-  .then((userCredential) => {
-    // Signed in
-    console.log("1")
-    let user = userCredential.user;
-    console.log(user)
-    // ...
-  })
-  .catch((error) => {
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    // ..
-    console.log(errorMessage)
-  });
-
-      
-      //auth
-      //.createUserWithEmailAndPassword(email,password)
-      //.then(userCredentials => {
-//        const user = userCredentials.user;
-        //alert("Usuário cadastrado com sucesso!")
-      //})
-      //.catch(error => alert(error.message))
-    }
-
+    
     const loginUsuario = () => {
 
       firebase.auth().signInWithEmailAndPassword(email, password)
@@ -87,9 +60,9 @@ export default function Login(){
     // Signed in
         let user = userCredential.user;
         setIdUsuario(user.uid)
-        setUsuario(user.email)
+        //setUsuario(user.email)
         console.log(idUsuario)
-        //navigation.navigate('Principal', {})
+        consultaUsuario(user.uid)
     // ...
       })
       .catch((error) => {
@@ -100,11 +73,31 @@ export default function Login(){
 
     }
 
+    function consultaUsuario(id)
+    {
+      
+      var docRef = database.collection("users").doc(id);
 
+      docRef.get()
+      .then((doc) => {
+        if (doc.exists) {
+          console.log("Document data:", doc.data());
+          setUsuario(doc.data().nome)
+
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      })
+      .catch((error) => {
+        console.log("Error getting document:", error);
+      });
+      
+
+    }
 
     return <>
     
-     <Text>Email logado: {usuario}</Text>   
     <TextInput
         label="Email"
         returnKeyType="next"
@@ -124,7 +117,7 @@ export default function Login(){
         />}
       />
       <View style={styles.forgotPassword}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => {navigation.navigate('EsqueceuSenha')}}>
           <Text style={styles.forgot}>Esqueceu sua senha?</Text>
         </TouchableOpacity>
       </View>
@@ -133,7 +126,7 @@ export default function Login(){
       </Button>
       <View style={styles.row}>
         <Text>Não possui uma conta? </Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => {navigation.navigate('NovaConta')}}>
           <Text style={styles.link}>Cadastrar</Text>
         </TouchableOpacity>
       </View>

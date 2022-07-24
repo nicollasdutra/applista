@@ -25,7 +25,7 @@ export default function Principal() {
 
   const navigation = useNavigation();
 
-  const { usuario, setUsuario, currentTab, setCurrentTab } = useContext(GlobalContext)
+  const { setIdUsuario, usuario, setUsuario, currentTab, setCurrentTab } = useContext(GlobalContext)
 
   // To get the curretn Status of menu ...
   const [showMenu, setShowMenu] = useState(false);
@@ -43,16 +43,13 @@ export default function Principal() {
     .signOut()
     .then(() => {
         setUsuario('')
+        setIdUsuario('')
         navigation.navigate('Principal', {})
     })
     .catch(error => alert(error.message))
   }
 
 
-  useEffect(() => {
-
-    
-  },[usuario])
 
   return (
     
