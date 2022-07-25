@@ -1,25 +1,46 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Text, StyleSheet,TouchableOpacity,View, FlatList } from 'react-native'
+import React, { useContext, useEffect, useState, useRef } from 'react'
+import { Text, StyleSheet,TouchableOpacity, Button, View, FlatList } from 'react-native'
+import { PortalProvider } from "@gorhom/portal";
+import BottomSheet from './components/BottomSheet';
+
+import Icon from 'react-native-vector-icons/Ionicons';
 import { GlobalContext } from '../../contexts/GlobalContext'
 
 import firebase from '../../../firebaseconfig';
 
-const Item = ({ nome, texto }) => (
+const Item = ({ nome, categoria }) => (
   
   <View style={estilos.cartao}>
       <View style={estilos.linha}>
-          <View>
-              <Text>{nome}</Text>
+          <View style={estilos.imagem}>
+           {categoria === '1' ?  <Icon name='cart' size={32} color='#5359D1' /> : <Icon name='reader' size={32} color='#5359D1' /> }
           </View>
-          <View>
-              <Text>{texto}</Text>
+          <View style={estilos.cartaoDestaque}>
+              <Text style={{fontWeight:'bold',fontSize:16}}>{nome}</Text>
+              <Text style={estilos.apelido}>{categoria==='1' ? 'Lista de compras' : 'Lista de tarefas'}</Text>
           </View>
+      </View>
+      <View style={estilos.opcoes}>
+          <Text style={estilos.textoOpcoes}>...</Text>
       </View>
   </View>
 );
 
 
 export default function Listas(){
+
+  const [atualizaPagina,setAtualizaPagina] = useState(false);
+
+  const modalRef = useRef(null);
+  
+  const onOpen = () => {
+    modalRef.current?.open();
+  };
+
+  const onClose = () => {
+    setAtualizaPagina(!atualizaPagina);
+    modalRef.current?.close();
+  };
 
   const database = firebase.firestore()
   const [listas, setListas] = useState([])
@@ -28,71 +49,71 @@ export default function Listas(){
 
   function getListas(id)
   {
+    const list = []
 
-    database.collection(id).onSnapshot((query) => {
-      const list = []
-      query.forEach((doc) => {
-        list.push({...doc.data(), id: doc.id})
-      })
-      setListas(list)
-    })
-    
-  }
-
-  function adicionaLista(id)
-  {
-    console.log(id)
-
-    database.collection(id).add({
-      nome: "Mercado",
-      texto: "Contra file"
-    })
-    .then((docRef) => {
-      console.log("Document written with ID: ", docRef.id);
-
+    database.collection("lists").where("user", "==", id)
+    .get()
+    .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          list.push({...doc.data()})       
+        });
+        setListas(list)
     })
     .catch((error) => {
-      console.log("Error adding document: ", error);
+        console.log("Error getting documents: ", error);
     });
-
-
+    
   }
 
   useEffect(() => {
       
-      setCurrentTab("Listas")
-      console.log(idUsuario)
+    setCurrentTab("Listas")
+    
 
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+     
+        let uid = user.uid;
+    
+        getListas(uid)
+      }
+    })
+    
 
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-       
-          let uid = user.uid;
-          console.log(uid)
+  },[atualizaPagina])
+  
 
-          getListas(uid)
-        }
-      })
-      
-
-    },[])
+ 
 
     const renderItem = ({ item }) => (
-      <Item nome={item.nome} texto={item.texto} />
+      <Item nome={item.nome} categoria={item.categoria} />
     );
 
     return <>
     
-        <Text>Listas</Text>
-        <TouchableOpacity onPress={() => {}} style={estilos.adicionarMemo}>
-            <Text style={estilos.adicionarMemoTexto}>+</Text>
-        </TouchableOpacity>
+        
+        <PortalProvider>
+          <View style={estilos.container}>
+            <FlatList
+              data={listas}
+              renderItem={renderItem}
+              keyExtractor={item => item.id}
+            />
+          
+            <BottomSheet modalRef={modalRef} onClose={onClose} />
 
-        <FlatList
-            data={listas}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-        /> 
+
+            <TouchableOpacity onPress={onOpen} style={estilos.adicionarMemo}>
+              <Text style={estilos.adicionarMemoTexto}>+</Text>
+            </TouchableOpacity> 
+            <Text style={{textAlign:'right', width:'100%',marginRight:15, marginBottom: 70, color:'#5359D1'}}>Nova Lista</Text>
+            
+            {/* <Button title="Open Modal" color="#1E2022" onPress={onOpen} /> */}
+          </View>
+        </PortalProvider>
+
+      
+         
     </>
 
   }
@@ -128,26 +149,65 @@ const estilos = StyleSheet.create({
       lineHeight: 40,
       color: "#FFFFFF",
     },
-    cartao:{
-      justifyContent: "space-between",
-      backgroundColor: '#F6F6F6',
-      marginVertical:8,
-      marginHorizontal: 16,
-      borderRadius: 6,
-      flexDirection: "row",
-      elevation: 4, //para colocar sombra - somente android
-  
-      //para IOS a sombra é os itens até o final (shadowRadius)
-      shadowColor: '#000',
-      shadowOffset:{
-          width: 0,
-          height:2, 
-      },
-      shadowOpacity: 0.23,
-      shadowRadius:2.62,
+  container: {
+    height:'80%',
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  linha:{
+
+
+
+
+
+cartao:{
+    justifyContent: "space-between",
+    backgroundColor: '#F6F6F6',
+    marginVertical:8,
+    marginHorizontal: 16,
+    borderRadius: 6,
     flexDirection: "row",
-  },
-  });
+    elevation: 4, //para colocar sombra - somente android
+
+    //para IOS a sombra é os itens até o final (shadowRadius)
+    shadowColor: '#000',
+    shadowOffset:{
+        width: 0,
+        height:2, 
+    },
+    shadowOpacity: 0.23,
+    shadowRadius:2.62,
+    width: '80%',
+    
+},
+linha:{
+  flexDirection: "row",
+},
+imagem:{
+  marginLeft: 10,
+  borderRadius: 6,
+  alignContent: "center",
+  justifyContent: "center",
+  
+},
+cartaoDestaque: {
+  marginLeft:16,
+  marginTop: 10,
+  marginBottom:10,
+},
+opcoes: {
+  marginRight: 20,
+  marginTop: 10,
+},
+textoOpcoes:{
+  fontWeight: 'bold',
+  fontSize:24,
+
+},
+nome:{
+  fontWeight: 'bold',
+  fontSize: 16,
+},
+
+});
   

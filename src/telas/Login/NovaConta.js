@@ -10,8 +10,6 @@ export default function NovaConta()
 {
     const navigation = useNavigation();
 
-    const route = useRoute();
-    
     const [nome, setNome] = useState('')
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
@@ -68,7 +66,6 @@ export default function NovaConta()
 
     function adicionaUser(id)
     {
-        console.log('2')
 
         database.collection("users").doc(id).set({
             nome: nome,
