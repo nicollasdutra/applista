@@ -55,7 +55,7 @@ export default function Login(){
     
     const loginUsuario = () => {
 
-      firebase.auth().signInWithEmailAndPassword(email, password)
+      firebase.auth().signInWithEmailAndPassword(email.trim(), password.trim())
       .then((userCredential) => {
     // Signed in
         let user = userCredential.user;

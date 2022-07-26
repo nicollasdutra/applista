@@ -68,9 +68,9 @@ export default function NovaConta()
     {
 
         database.collection("users").doc(id).set({
-            nome: nome,
-            email: email,
-            senha: senha
+            nome: nome.trim(),
+            email: email.trim(),
+            senha: senha.trim()
         })
         .then(() => {
             console.log("Document successfully written!");

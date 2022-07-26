@@ -20,7 +20,7 @@ export default function EsqueceuSenha()
 
         erro === '' ?  
 
-        firebase.auth().sendPasswordResetEmail(email)
+        firebase.auth().sendPasswordResetEmail(email.trim())
         .then(() => {
             // Password reset email sent!
             

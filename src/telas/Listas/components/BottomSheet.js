@@ -6,7 +6,7 @@ import { Modalize } from "react-native-modalize";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { TextInput } from 'react-native-paper';
 import SelectList from 'react-native-dropdown-select-list'
-
+import { getData } from "../../../services/Data";
 
 import { GlobalContext } from '../../../contexts/GlobalContext';
 
@@ -34,7 +34,8 @@ const BottomSheet = ({ modalRef, onClose }) => {
         database.collection("lists").add({
             nome: nomeLista,
             categoria: categoria,
-            user: idUsuario
+            user: idUsuario,
+            data: getData()
         })
         .then(() => {
             Alert.alert("Lista criada com sucesso","");
@@ -76,10 +77,12 @@ const BottomSheet = ({ modalRef, onClose }) => {
             />
                 
             </View>
-
-
-            <Button title="Cadastrar" color="#5359D1" onPress={adicionaLista} />
-            <Button title="Voltar" color="#b5b2b2" onPress={onClose} />
+            <View style={{marginTop:20}}>
+              <Button title="Cadastrar" color="#5359D1" onPress={adicionaLista} />
+            </View>
+            <View style={{marginTop:10}}>
+              <Button title="Voltar" color="#b5b2b2" onPress={onClose} />
+            </View>
           </View>
         </Modalize>
       </Portal>
@@ -91,7 +94,8 @@ export default BottomSheet;
 const styles = StyleSheet.create({
   content: {
     flex: 1,
-    justifyContent: "space-between",
+    flexDirection:'column',
+    //justifyContent: "space-between",
     height: modalHeight,
     paddingHorizontal: 20,
     paddingVertical: 32,

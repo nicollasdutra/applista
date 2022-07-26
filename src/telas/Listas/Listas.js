@@ -5,29 +5,38 @@ import BottomSheet from './components/BottomSheet';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import { GlobalContext } from '../../contexts/GlobalContext'
+import { useNavigation } from '@react-navigation/native';
 
 import firebase from '../../../firebaseconfig';
 
-const Item = ({ nome, categoria }) => (
-  
-  <View style={estilos.cartao}>
-      <View style={estilos.linha}>
-          <View style={estilos.imagem}>
-           {categoria === '1' ?  <Icon name='cart' size={32} color='#5359D1' /> : <Icon name='reader' size={32} color='#5359D1' /> }
-          </View>
-          <View style={estilos.cartaoDestaque}>
-              <Text style={{fontWeight:'bold',fontSize:16}}>{nome}</Text>
-              <Text style={estilos.apelido}>{categoria==='1' ? 'Lista de compras' : 'Lista de tarefas'}</Text>
-          </View>
-      </View>
-      <View style={estilos.opcoes}>
-          <Text style={estilos.textoOpcoes}>...</Text>
-      </View>
-  </View>
-);
+
 
 
 export default function Listas(){
+
+
+  const Item = ({ nome, categoria, iduser,data }) => (
+  
+    <TouchableOpacity style={estilos.cartao} onPress={() => clica(iduser, nome, categoria,data)}>
+        <View style={estilos.linha}>
+            <View style={estilos.imagem}>
+             {categoria === '1' ?  <Icon name='cart' size={32} color='#5359D1' /> : <Icon name='reader' size={32} color='#5359D1' /> }
+            </View>
+            <View style={estilos.cartaoDestaque}>
+                <Text style={{fontWeight:'bold',fontSize:16}}>{nome}</Text>
+                <Text style={estilos.apelido}>{categoria==='1' ? 'Lista de compras' : 'Lista de tarefas'}</Text>
+            </View>
+        </View>
+        <View style={estilos.opcoes}>
+            <Text style={{fontSize:10}}>Criado em:</Text>
+            <Text style={{fontSize:10}}>{data.substring(0,10)}</Text>
+        </View>
+    </TouchableOpacity>
+  );
+
+  
+  
+  const navigation = useNavigation();
 
   const [atualizaPagina,setAtualizaPagina] = useState(false);
 
@@ -83,10 +92,15 @@ export default function Listas(){
   },[atualizaPagina])
   
 
+  function clica(iduser, nome, categoria, data){
+
+    navigation.navigate('Lista', { iduser: iduser, nome: nome, categoria: categoria, data: data })
+    
+  }
  
 
     const renderItem = ({ item }) => (
-      <Item nome={item.nome} categoria={item.categoria} />
+        <Item nome={item.nome} categoria={item.categoria} iduser={idUsuario} data={item.data}/>
     );
 
     return <>
@@ -97,7 +111,7 @@ export default function Listas(){
             <FlatList
               data={listas}
               renderItem={renderItem}
-              keyExtractor={item => item.id}
+              keyExtractor={item => item.data}
             />
           
             <BottomSheet modalRef={modalRef} onClose={onClose} />
@@ -106,7 +120,7 @@ export default function Listas(){
             <TouchableOpacity onPress={onOpen} style={estilos.adicionarMemo}>
               <Text style={estilos.adicionarMemoTexto}>+</Text>
             </TouchableOpacity> 
-            <Text style={{textAlign:'right', width:'100%',marginRight:15, marginBottom: 70, color:'#5359D1'}}>Nova Lista</Text>
+            <Text style={{textAlign:'right', width:'100%',marginRight:16, marginBottom: 110, color:'#5359D1'}}>Nova Lista</Text>
             
             {/* <Button title="Open Modal" color="#1E2022" onPress={onOpen} /> */}
           </View>
@@ -130,6 +144,7 @@ const estilos = StyleSheet.create({
       height: 48,
       width: 48,
       margin: 16,
+      marginBottom:56,
       alignItems: "center",
       borderRadius: 9999,
       position: "absolute",
@@ -150,7 +165,8 @@ const estilos = StyleSheet.create({
       color: "#FFFFFF",
     },
   container: {
-    height:'80%',
+    height:'90%',
+    width:'100%',
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
@@ -164,7 +180,7 @@ cartao:{
     justifyContent: "space-between",
     backgroundColor: '#F6F6F6',
     marginVertical:8,
-    marginHorizontal: 16,
+    marginHorizontal: 23,
     borderRadius: 6,
     flexDirection: "row",
     elevation: 4, //para colocar sombra - somente android
