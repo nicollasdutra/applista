@@ -14,7 +14,7 @@ import firebase from '../../../../firebaseconfig';
 
 
 const { height } = Dimensions.get("screen");
-const modalHeight = height * 0.5;
+const modalHeight = height * 0.8;
 
 const BottomSheet = ({ modalRef, onClose }) => {
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Text, TouchableOpacity,SafeAreaView, View, StyleSheet, FlatList, Alert } from 'react-native'
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
-import { Button, Divider, TextInput } from 'react-native-paper';
+import { Button, Divider, TextInput, Checkbox  } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getData } from '../../services/Data';
 
@@ -23,6 +23,25 @@ function excluiItem(id, setAdiciona, adiciona){
 
 }
 
+function alteraItem(id, checked, setAdiciona,adiciona){
+        
+    let item = database.collection("items").doc(id);
+
+    return item.update({
+        checked: checked
+    })
+    .then(() => {
+        console.log("Document successfully updated!");
+        setAdiciona(!adiciona)
+    })
+    .catch((error) => {
+        console.error("Error updating document: ", error);
+    });
+    
+}
+
+
+
 function msgConfirmaExclusao(id, setAdiciona,adiciona){
     
     Alert.alert(
@@ -40,8 +59,18 @@ const Item = ({ id, nome, checked, setAdiciona, adiciona }) => (
 
         <View style={{ marginLeft:10, width:'90%', marginBottom:10, }}>
             <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-                <Text style={{marginLeft:10,color:'black',marginBottom:5,}}>{nome}</Text>
-                <TouchableOpacity onPress={()=>{msgConfirmaExclusao(id,setAdiciona,adiciona)}}><Icon name='close' style={{marginLeft:20,marginBottom:6}} size={16} color='red' /></TouchableOpacity>
+                <View style={{flexDirection:'row'}}>
+                    <Checkbox
+                        status={checked ? 'checked' : 'unchecked'}
+                        onPress={() => {alteraItem(id,!checked,setAdiciona,adiciona)}}
+                    />
+                    {checked ?  
+                        <Text style={{marginTop:8, marginLeft:10,color:'gray',marginBottom:5,}}>{nome}</Text>
+                        :
+                        <Text style={{marginTop:8, marginLeft:10,color:'black',marginBottom:5,}}>{nome}</Text>
+                    }
+                </View>
+                <TouchableOpacity style={{marginTop:8}} onPress={()=>{msgConfirmaExclusao(id,setAdiciona,adiciona)}}><Icon name='close' style={{marginLeft:20,marginBottom:6}} size={20} color='red' /></TouchableOpacity>
             </View>
             <Divider />
         </View>
@@ -157,7 +186,7 @@ export default function Lista(){
             <Divider style={{marginBottom:10,marginTop:10}} />
             
             <FlatList
-              data={listaItens}
+              data={listaItens.sort((a,b) => a.checked-b.checked)}
               renderItem={renderItem}
               keyExtractor={item => item.id}
             />

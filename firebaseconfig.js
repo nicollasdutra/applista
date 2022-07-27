@@ -3,7 +3,6 @@ import "firebase/storage"
 
 var firebaseConfig = {
 
-
   };
   
  

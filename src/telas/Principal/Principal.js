@@ -6,6 +6,8 @@ import firebase from '../../../firebaseconfig';
 import { GlobalContext } from '../../contexts/GlobalContext';
 
 
+import logo from '../../../assets/logo.png';
+
 // Tab ICons...
 import home from '../../../assets/home.png';
 import search from '../../../assets/search.png';
@@ -120,6 +122,11 @@ export default function Principal() {
             translateY: closeButtonOffset
           }]
         }}>
+
+          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+            
+
+
           <TouchableOpacity onPress={() => {
             // Do Actions Here....
             // Scaling the view...
@@ -158,7 +165,12 @@ export default function Principal() {
             }}></Image>
 
           </TouchableOpacity>
-
+          <View style={{flexDirection:'row'}}>
+              <Image source={logo} style={{width:24,height:24, marginTop:17, marginLeft:30}} />
+              <Text style={{fontSize:16, color:'#5359D1', marginTop:17, marginLeft:10}}>List Me Now!</Text>
+            </View>
+          </View>
+          
           <Text style={{
             fontSize: 18,
             fontWeight: 'bold',
