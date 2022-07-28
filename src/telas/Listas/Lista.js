@@ -5,6 +5,7 @@ import { Button, Divider, TextInput, Checkbox  } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getData } from '../../services/Data';
 
+
 import firebase from '../../../firebaseconfig';
 
 const database = firebase.firestore()
@@ -90,7 +91,7 @@ export default function Lista(){
         
         const list = []
 
-        database.collection("items").where("datalist", "==", route.params.data)
+        database.collection("items").where("idlist", "==", route.params.id)
         .get()
         .then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
@@ -100,7 +101,7 @@ export default function Lista(){
                     nome: doc.data().nome,
                     checked: doc.data().checked,
                     dataitem: doc.data().dataitem,
-                    datalist: doc.data().datalist,
+                    idlist: doc.data().idlist,
                     user: doc.data().user
                 })
             });
@@ -112,9 +113,6 @@ export default function Lista(){
     },[adiciona])
 
  
-
-
-    
 
     const renderItem = ({ item }) => (
 
@@ -131,7 +129,7 @@ export default function Lista(){
                 lista: route.params.nome,
                 user: route.params.iduser,
                 checked: false,
-                datalist: route.params.data,
+                idlist: route.params.id,
                 dataitem: getData()
             })
             .then(() => {
@@ -146,6 +144,12 @@ export default function Lista(){
             ''//console.log(getData())
         
 
+    }
+
+    function clica(idlist, nome, categoria, data){
+
+        navigation.navigate('ListaConfig', { idlist: idlist, nome: nome, categoria: categoria, data: data })
+        
     }
 
     return <>
@@ -167,7 +171,7 @@ export default function Lista(){
                     </View>
                 </View>
                 <View>
-                    <Text style={{fontSize:36, marginRight:10}}>...</Text>
+                    <Text onPress={() => {clica(route.params.id,route.params.nome,route.params.categoria,route.params.data)}} style={{fontSize:36, marginRight:10}}>...</Text>
                 </View>
             </View>
             <Divider style={{marginBottom:10,marginTop:10}} />

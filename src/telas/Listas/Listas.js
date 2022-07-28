@@ -15,9 +15,9 @@ import firebase from '../../../firebaseconfig';
 export default function Listas(){
 
 
-  const Item = ({ nome, categoria, iduser,data }) => (
+  const Item = ({ id, nome, categoria, iduser,data }) => (
   
-    <TouchableOpacity style={estilos.cartao} onPress={() => clica(iduser, nome, categoria,data)}>
+    <TouchableOpacity style={estilos.cartao} onPress={() => clica(id, iduser, nome, categoria,data)}>
         <View style={estilos.linha}>
             <View style={estilos.imagem}>
              {categoria === '1' ?  <Icon name='cart' size={32} color='#5359D1' /> : <Icon name='reader' size={32} color='#5359D1' /> }
@@ -64,7 +64,12 @@ export default function Listas(){
     .get()
     .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          list.push({...doc.data()})       
+          list.push({
+            id: doc.id,
+            nome: doc.data().nome,
+            categoria: doc.data().categoria,
+            data: doc.data().data,
+          })
         });
         setListas(list)
     })
@@ -92,15 +97,15 @@ export default function Listas(){
   },[atualizaPagina])
   
 
-  function clica(iduser, nome, categoria, data){
+  function clica(id, iduser, nome, categoria, data){
 
-    navigation.navigate('Lista', { iduser: iduser, nome: nome, categoria: categoria, data: data })
+    navigation.navigate('Lista', { id: id, iduser: iduser, nome: nome, categoria: categoria, data: data })
     
   }
  
 
     const renderItem = ({ item }) => (
-        <Item nome={item.nome} categoria={item.categoria} iduser={idUsuario} data={item.data}/>
+        <Item id={item.id} nome={item.nome} categoria={item.categoria} iduser={idUsuario} data={item.data}/>
     );
 
     return <>

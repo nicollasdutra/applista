@@ -9,6 +9,7 @@ import Configuracoes from '../Configuracoes/Configuracoes';
 import NovaConta from '../Login/NovaConta';
 import EsqueceuSenha from '../Login/EsqueceuSenha';
 import Lista from '../Listas/Lista';
+import ListaConfig from '../Listas/ListaConfig';
 
 import { GlobalContext } from '../../contexts/GlobalContext';
 
@@ -59,6 +60,10 @@ const Rotas = () => {
         <Stack.Screen
           name="Lista"
           component={Lista}
+        />
+        <Stack.Screen
+          name="ListaConfig"
+          component={ListaConfig}
         />
       </Stack.Navigator>
     </NavigationContainer>
