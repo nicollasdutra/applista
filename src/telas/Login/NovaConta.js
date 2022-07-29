@@ -50,8 +50,8 @@ export default function NovaConta()
             var errorCode = error.code;
             var errorMessage = error.message;
             // ..
-            console.log(errorCode)
-            console.log(errorMessage)
+            //console.log(errorCode)
+            //console.log(errorMessage)
 
             errorCode === 'auth/invalid-email' ? setErro('Email inválido!') : ''
             errorCode === 'auth/email-already-in-use' ? setErro('Email já cadastrado!') : ''
@@ -73,7 +73,7 @@ export default function NovaConta()
             senha: senha.trim()
         })
         .then(() => {
-            console.log("Document successfully written!");
+            //console.log("Document successfully written!");
             setIdUsuario(id)
             setUsuario(nome)
             navigation.navigate('Principal')

@@ -10,6 +10,7 @@ import NovaConta from '../Login/NovaConta';
 import EsqueceuSenha from '../Login/EsqueceuSenha';
 import Lista from '../Listas/Lista';
 import ListaConfig from '../Listas/ListaConfig';
+import ListasShared from '../Listas/ListasShared';
 
 import { GlobalContext } from '../../contexts/GlobalContext';
 
@@ -22,7 +23,7 @@ const Rotas = () => {
 
 
     useEffect(() => {
-        console.log(usuario)
+        //console.log(usuario)
         usuario === 'null' ? setUsuario('') : ''
     },[])
 
@@ -64,6 +65,10 @@ const Rotas = () => {
         <Stack.Screen
           name="ListaConfig"
           component={ListaConfig}
+        />
+        <Stack.Screen
+          name="ListasShared"
+          component={ListasShared}
         />
       </Stack.Navigator>
     </NavigationContainer>

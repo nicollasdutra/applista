@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { SafeAreaView, Text, StyleSheet, View, TouchableOpacity } from 'react-native'
+import { SafeAreaView, Text, StyleSheet, View, TouchableOpacity, Alert } from 'react-native'
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { Button, Divider, TextInput, Checkbox  } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -35,9 +35,61 @@ export default function ListaConfig()
             })       
         : 
             ''//console.log(getData())
-        
 
     }
+
+    function msgConfirmaExclusao(){
+    
+        Alert.alert(
+            'Excluir',
+            'Deseja realmente excluir esta lista?', 
+            [
+              {text: 'SIM', onPress: () => excluiItem()},
+              {text: 'NÃO', onPress: () => ''},
+            ],
+            {cancelable: false},
+          );
+    }
+
+    function excluiItem(){
+        
+        //consulta os itens da lista deleta um por um
+
+        database.collection("items").where("idlist", "==", route.params.idlist)
+        .get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+        
+                database.collection("items").doc(doc.id).delete().then(() => {
+                    //console.log("Document successfully deleted!");
+                }).catch((error) => {
+                    //console.error("Error removing document: ", error);
+                });
+        
+        
+            });
+        })
+        .catch((error) => {
+            //console.log("Error getting documents: ", error);
+        });
+
+
+        //deleta a lista agora
+        
+        database.collection("lists").doc(route.params.idlist).delete().then(() => {
+            //console.log("Document successfully deleted!");
+
+            navigation.navigate('Principal')
+            //Alert.alert("Lista criada com sucesso","");
+        }).catch((error) => {
+            //console.error("Error removing document: ", error);
+        }); 
+        
+    
+    }
+
+
+
 
     return <>
     
@@ -58,7 +110,7 @@ export default function ListaConfig()
                         </View>
                     </View>
                     <View>
-                        <Button style={{backgroundColor:'red', marginTop:12, marginRight:10}} mode="contained" onPress={() => {navigation.goBack()}}>
+                        <Button style={{backgroundColor:'red', marginTop:12, marginRight:10}} mode="contained" onPress={msgConfirmaExclusao}>
                             <Icon name='trash' size={18} color='white' />
                         </Button>
                     </View>

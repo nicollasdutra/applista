@@ -35,7 +35,7 @@ export default function Login(){
     
 
     const navigation = useNavigation();
-    const {idUsuario, setIdUsuario, usuario, setUsuario, setCurrentTab } = useContext(GlobalContext)
+    const {idUsuario, setIdUsuario, usuario, setUsuario, setCurrentTab, setListaShared } = useContext(GlobalContext)
     const [email,setEmail] = useState('')
     const [password,setPassword] = useState('')
     const [secureTextEntry, setSecureTextEntry] = useState(true);
@@ -47,7 +47,7 @@ export default function Login(){
       setIdUsuario(firebase.auth.currentUser?.uid)
       setUsuario(firebase.auth.currentUser?.email)
       
-      console.log(idUsuario)
+      //console.log(idUsuario)
 
     },[])
 
@@ -61,8 +61,38 @@ export default function Login(){
         let user = userCredential.user;
         setIdUsuario(user.uid)
         //setUsuario(user.email)
-        console.log(idUsuario)
+        //console.log(idUsuario)
         consultaUsuario(user.uid)
+
+
+        const listS = []
+    
+        database.collection("shared").where("email", "==", email.trim())
+        .get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              
+                database.collection("lists").doc(doc.data().idlist)
+                .get()
+                .then((item) => {
+                    listS.push({
+                    id: item.id,
+                    nome: item.data().nome,
+                    categoria: item.data().categoria,
+                    data: item.data().data
+                  }) 
+                })
+            });
+  
+            setListaShared(listS)
+            
+        })
+        .catch((error) => {
+            //console.log("Error getting documents: ", error);
+        });
+  
+
+
     // ...
       })
       .catch((error) => {
@@ -81,16 +111,16 @@ export default function Login(){
       docRef.get()
       .then((doc) => {
         if (doc.exists) {
-          console.log("Document data:", doc.data());
+          //console.log("Document data:", doc.data());
           setUsuario(doc.data().nome)
 
         } else {
           // doc.data() will be undefined in this case
-          console.log("No such document!");
+          //console.log("No such document!");
         }
       })
       .catch((error) => {
-        console.log("Error getting document:", error);
+        //console.log("Error getting document:", error);
       });
       
 

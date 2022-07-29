@@ -14,7 +14,7 @@ function excluiItem(id, setAdiciona, adiciona){
         
     
     database.collection("items").doc(id).delete().then(() => {
-        console.log("Document successfully deleted!");
+        //console.log("Document successfully deleted!");
         setAdiciona(!adiciona)
         //Alert.alert("Lista criada com sucesso","");
     }).catch((error) => {
@@ -32,7 +32,7 @@ function alteraItem(id, checked, setAdiciona,adiciona){
         checked: checked
     })
     .then(() => {
-        console.log("Document successfully updated!");
+        //console.log("Document successfully updated!");
         setAdiciona(!adiciona)
     })
     .catch((error) => {
@@ -50,7 +50,7 @@ function msgConfirmaExclusao(id, setAdiciona,adiciona){
         'Deseja realmente excluir este item?', 
         [
           {text: 'SIM', onPress: () => excluiItem(id, setAdiciona,adiciona)},
-          {text: 'NÃO', onPress: () => console.log('NOT Pressed')},
+          {text: 'NÃO', onPress: () => ''},
         ],
         {cancelable: false},
       );
@@ -108,7 +108,7 @@ export default function Lista(){
             setListaItens(list)
         })
         .catch((error) => {
-            console.log("Error getting documents: ", error);
+            //console.log("Error getting documents: ", error);
         });
     },[adiciona])
 

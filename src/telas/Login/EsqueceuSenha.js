@@ -29,8 +29,8 @@ export default function EsqueceuSenha()
 
           })
           .catch((error) => {
-            console.log(error.code)
-            console.log(error.message)
+            //console.log(error.code)
+            //console.log(error.message)
             setSuccess('')
             
             error.code === 'auth/invalid-email' ? setErro('Email inválido!') : ''

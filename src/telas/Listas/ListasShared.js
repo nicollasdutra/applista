@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState, useRef } from 'react'
 import { Text, StyleSheet,TouchableOpacity, Button, View, FlatList } from 'react-native'
 import { PortalProvider } from "@gorhom/portal";
-import BottomSheet from './components/BottomSheet';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import { GlobalContext } from '../../contexts/GlobalContext'
@@ -11,7 +10,7 @@ import firebase from '../../../firebaseconfig';
 
 
 
-export default function Listas(){
+export default function ListasShared(){
 
   const isFocused = useIsFocused()
 
@@ -53,70 +52,39 @@ export default function Listas(){
 
   const database = firebase.firestore()
   
-  const [listas, setListas] = useState([])
+  let listas = []
   const [listasShared, setListasShared] = useState([])
-  const {idUsuario, usuario, setUsuario, setCurrentTab } = useContext(GlobalContext)
+  const {idUsuario, usuario, setUsuario, setCurrentTab, listaShared } = useContext(GlobalContext)
   
 
-  function getListas(id)
+  async function getListasShared()
   {
-    const list = []
-
-    database.collection("lists").where("user", "==", id)
-    .get()
-    .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          list.push({
-            id: doc.id,
-            nome: doc.data().nome,
-            categoria: doc.data().categoria,
-            data: doc.data().data
-          })
-        });
-        setListas(list)
-    })
-    .catch((error) => {
-        //console.log("Error getting documents: ", error);
-    });
+    let listS = []
     
-  }
+    listaShared.forEach((lista) => {
 
-
-  function getListasShared()
-  {
-    const listS = []
-    let email = firebase.auth().currentUser.email
-    
-    database.collection("shared").where("email", "==", email)
-    .get()
-    .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          
-          database.collection("lists").doc(doc.data().idlist)
-          .get()
-          .then((item) => {
+       database.collection("lists").doc(lista)
+        .get()
+        .then((item) => {
             listS.push({
-              id: item.id,
-              nome: item.data().nome,
-              categoria: item.data().categoria,
-              data: item.data().data
-            }) 
-          })
-        });
-        setListasShared(listS)
-    })
-    .catch((error) => {
-        //console.log("Error getting documents: ", error);
-    });
+            id: item.id,
+            nome: item.data().nome,
+            categoria: item.data().categoria,
+            data: item.data().data
+          }) 
+        })
+      });
 
-    
+      let vlista = await listS
+      
+      return vlista
   }
 
 
 
   useEffect(() => {
       
-    setCurrentTab("Minhas Listas")
+    setCurrentTab("Compartilhadas")
     
 
     firebase.auth().onAuthStateChanged((user) => {
@@ -124,30 +92,15 @@ export default function Listas(){
      
         let uid = user.uid;
     
-        getListas(uid)
+        setListasShared(listaShared)
       }
+
     })
-    
 
-  },[atualizaPagina])
+  },[])
 
-  useEffect(() => {
-      
-    setCurrentTab("Minhas Listas")
-    
 
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-     
-        let uid = user.uid;
-    
-        getListas(uid)
-        
-      }
-    })
-    
 
-  },[isFocused])
 
   function clica(id, iduser, nome, categoria, data){
 
@@ -166,27 +119,14 @@ export default function Listas(){
         
         <PortalProvider>
           <View style={estilos.container}>
-            <FlatList
-              data={listas}
-              renderItem={renderItem}
-              keyExtractor={item => item.data}
-            />
+          
           
             <FlatList
               data={listasShared}
               renderItem={renderItem}
               keyExtractor={item => item.data}
             />
-
-            <BottomSheet modalRef={modalRef} onClose={onClose} />
-
-
-            <TouchableOpacity onPress={onOpen} style={estilos.adicionarMemo}>
-              <Text style={estilos.adicionarMemoTexto}>+</Text>
-            </TouchableOpacity> 
-            <Text style={{textAlign:'right', width:'100%',marginRight:16, marginBottom: 110, color:'#5359D1'}}>Nova Lista</Text>
-            
-            {/* <Button title="Open Modal" color="#1E2022" onPress={onOpen} /> */}
+          
           </View>
         </PortalProvider>
 

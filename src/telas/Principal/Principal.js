@@ -21,6 +21,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import Login from '../Login/Login';
 import Listas from '../Listas/Listas';
+import ListasShared from '../Listas/ListasShared';
 import Configuracoes from '../Configuracoes/Configuracoes';
 
 export default function Principal() {
@@ -80,7 +81,8 @@ export default function Principal() {
           }
 
           {usuario === undefined ? TabButton(currentTab, setCurrentTab, "Login", home, false ,'',showMenu,setShowMenu, offsetValue,scaleValue,closeButtonOffset) : usuario === '' ? TabButton(currentTab, setCurrentTab, "Login", home, false ,'',showMenu,setShowMenu, offsetValue,scaleValue,closeButtonOffset) : ''}
-          {usuario === undefined ? '' : usuario === '' ? '' : TabButton(currentTab, setCurrentTab, "Listas", search, true, "md-list",showMenu,setShowMenu, offsetValue,scaleValue,closeButtonOffset)}
+          {usuario === undefined ? '' : usuario === '' ? '' : TabButton(currentTab, setCurrentTab, "Minhas Listas", search, true, "md-list",showMenu,setShowMenu, offsetValue,scaleValue,closeButtonOffset)}
+          {usuario === undefined ? '' : usuario === '' ? '' : TabButton(currentTab, setCurrentTab, "Compartilhadas", search, true, "md-list",showMenu,setShowMenu, offsetValue,scaleValue,closeButtonOffset)}
           {usuario === undefined ? '' : usuario === '' ? '' : TabButton(currentTab, setCurrentTab, "Configurações", settings, false, '',showMenu,setShowMenu, offsetValue,scaleValue,closeButtonOffset)}
 
         </View>
@@ -183,8 +185,9 @@ export default function Principal() {
           {/* Carrega aqui a pagina App.js */}
 
           {currentTab === "Login" ? usuario === undefined ? <Login /> : usuario === '' ? <Login /> : <Listas /> : 
-            currentTab === "Listas" ? usuario === undefined ? <Login /> : usuario === '' ? <Login /> : <Listas /> : 
-              currentTab === "Configurações" ? usuario === undefined ? <Login /> : usuario === '' ? <Login /> : <Configuracoes /> : 
+            currentTab === "Minhas Listas" ? usuario === undefined ? <Login /> : usuario === '' ? <Login /> : <Listas /> : 
+              currentTab === "Compartilhadas" ? usuario === undefined ? <Login /> : usuario === '' ? <Login /> : <ListasShared /> : 
+                currentTab === "Configurações" ? usuario === undefined ? <Login /> : usuario === '' ? <Login /> : <Configuracoes /> : 
 
               ''
           }
