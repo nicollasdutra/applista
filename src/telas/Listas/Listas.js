@@ -15,21 +15,22 @@ export default function Listas(){
 
   const isFocused = useIsFocused()
 
-  const Item = ({ id, nome, categoria, iduser,data }) => (
+  const Item = ({ id, nome, categoria, iduser,data, username }) => (
   
-    <TouchableOpacity style={estilos.cartao} onPress={() => clica(id, iduser, nome, categoria,data)}>
+    <TouchableOpacity style={estilos.cartao} onPress={() => clica(id, iduser, nome, categoria,data,username)}>
         <View style={estilos.linha}>
             <View style={estilos.imagem}>
-             {categoria === '1' ?  <Icon name='cart' size={32} color='#5359D1' /> : <Icon name='reader' size={32} color='#5359D1' /> }
+             {categoria === '1' ?  <Icon name='cart' size={32} color='#5359D1' /> : categoria === '2' ? <Icon name='reader' size={32} color='#5359D1' /> : <Icon name='cash-outline' size={32} color='#5359D1' /> }
             </View>
             <View style={estilos.cartaoDestaque}>
-                <Text style={{fontWeight:'bold',fontSize:16}}>{nome}</Text>
-                <Text style={estilos.apelido}>{categoria==='1' ? 'Lista de compras' : 'Lista de tarefas'}</Text>
+                <Text style={{fontWeight:'bold',fontSize:16,color:'gray'}}>{nome}</Text>
+                <Text style={{color:'gray'}}>{categoria==='1' ? 'Lista de compras' : categoria==='2' ? 'Lista de tarefas' : 'Lista de Finanças'}</Text>
             </View>
         </View>
         <View style={estilos.opcoes}>
-            <Text style={{fontSize:10}}>Criado em:</Text>
-            <Text style={{fontSize:10}}>{data.substring(0,10)}</Text>
+            <Text style={{fontSize:10,color:'gray'}}>Criado em:</Text>
+            <Text style={{fontSize:10,color:'gray'}}>{data.substring(0,10)}</Text>
+            <Text style={{fontSize:10,color:'gray'}}>por {username}</Text>
         </View>
     </TouchableOpacity>
   );
@@ -70,7 +71,8 @@ export default function Listas(){
             id: doc.id,
             nome: doc.data().nome,
             categoria: doc.data().categoria,
-            data: doc.data().data
+            data: doc.data().data,
+            username: doc.data().username
           })
         });
         setListas(list)
@@ -82,37 +84,7 @@ export default function Listas(){
   }
 
 
-  function getListasShared()
-  {
-    const listS = []
-    let email = firebase.auth().currentUser.email
-    
-    database.collection("shared").where("email", "==", email)
-    .get()
-    .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          
-          database.collection("lists").doc(doc.data().idlist)
-          .get()
-          .then((item) => {
-            listS.push({
-              id: item.id,
-              nome: item.data().nome,
-              categoria: item.data().categoria,
-              data: item.data().data
-            }) 
-          })
-        });
-        setListasShared(listS)
-    })
-    .catch((error) => {
-        //console.log("Error getting documents: ", error);
-    });
-
-    
-  }
-
-
+  
 
   useEffect(() => {
       
@@ -149,15 +121,15 @@ export default function Listas(){
 
   },[isFocused])
 
-  function clica(id, iduser, nome, categoria, data){
+  function clica(id, iduser, nome, categoria, data, username){
 
-    navigation.navigate('Lista', { id: id, iduser: iduser, nome: nome, categoria: categoria, data: data })
+    navigation.navigate('Lista', { id: id, iduser: iduser, nome: nome, categoria: categoria, data: data, username: username })
     
   }
  
 
     const renderItem = ({ item }) => (
-        <Item id={item.id} nome={item.nome} categoria={item.categoria} iduser={idUsuario} data={item.data}/>
+        <Item id={item.id} nome={item.nome} categoria={item.categoria} iduser={idUsuario} data={item.data} username={item.username}/>
     );
     
 

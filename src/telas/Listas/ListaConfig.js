@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { SafeAreaView, Text, StyleSheet, View, TouchableOpacity, Alert } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { SafeAreaView, Text, StyleSheet, View, TouchableOpacity, Alert, FlatList } from 'react-native'
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { Button, Divider, TextInput, Checkbox  } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -8,12 +8,51 @@ import { getData } from '../../services/Data';
 
 const database = firebase.firestore()
 
+
+
 export default function ListaConfig()
 {
     const navigation = useNavigation();
     const route = useRoute();
     const [email,setEmail] = useState();
+    const [listaItens,setListaItens]=useState([])
     const [adiciona, setAdiciona] = useState(false)
+
+    const Item = ({ id, email }) => (
+
+        <View style={{ marginLeft:10, width:'90%', marginBottom:5, }}>
+            <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                <View style={{flexDirection:'row'}}>
+                    <Text style={{marginTop:8, marginLeft:10,color:'gray',marginBottom:5,color:'gray'}}>{email}</Text>
+                </View>
+                <TouchableOpacity style={{marginTop:8}} onPress={()=>{msgConfirmaExclusaoShared(id,setAdiciona,adiciona)}}><Icon name='close' style={{marginLeft:20,marginBottom:6}} size={20} color='red' /></TouchableOpacity>
+            </View>
+            <Divider />
+        </View>
+    
+    
+    );
+
+  useEffect(() => {
+        
+    const list = []
+
+    database.collection("shared").where("idlist", "==", route.params.idlist)
+    .get()
+    .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+        //list.push({...doc.data()})       
+            list.push({
+                id: doc.id,
+                email: doc.data().email
+            })
+        });
+        setListaItens(list)
+    })
+    .catch((error) => {
+        //console.log("Error getting documents: ", error);
+    });
+},[adiciona])
 
 
     function adicionaNaLista(){
@@ -45,6 +84,19 @@ export default function ListaConfig()
             'Deseja realmente excluir esta lista?', 
             [
               {text: 'SIM', onPress: () => excluiItem()},
+              {text: 'NÃO', onPress: () => ''},
+            ],
+            {cancelable: false},
+          );
+    }
+
+    function msgConfirmaExclusaoShared(id, setAdiciona,adiciona){
+    
+        Alert.alert(
+            'Excluir',
+            'Deseja realmente excluir este item?', 
+            [
+              {text: 'SIM', onPress: () => excluiItemShared(id, setAdiciona,adiciona)},
               {text: 'NÃO', onPress: () => ''},
             ],
             {cancelable: false},
@@ -89,7 +141,25 @@ export default function ListaConfig()
     }
 
 
+    function excluiItemShared(id, setAdiciona, adiciona){
+        
+    
+        database.collection("shared").doc(id).delete().then(() => {
+            //console.log("Document successfully deleted!");
+            setAdiciona(!adiciona)
+            //Alert.alert("Lista criada com sucesso","");
+        }).catch((error) => {
+            console.error("Error removing document: ", error);
+        });
+        
+    
+    }
 
+
+    const renderItem = ({ item }) => (
+
+        <Item id={item.id} email={item.email} setAdiciona={setAdiciona} adiciona={adiciona} />
+    );
 
     return <>
     
@@ -105,8 +175,9 @@ export default function ListaConfig()
                             {route.params.categoria === '1' ?  <Icon name='cart' size={42} color='#5359D1' /> : <Icon name='reader' size={32} color='#5359D1' /> }
                         </View>
                         <View style={{flexDirection:'column'}}>
-                            <Text style={{fontWeight:'bold',fontSize:30}}>{route.params.nome}</Text>
-                            <Text style={{fontSize:14}}> Lista de {route.params.categoria === '1' ? 'Compras' : 'Tarefas'}</Text>
+                            <Text style={{fontWeight:'bold',fontSize:30,color:'gray'}}>{route.params.nome}</Text>
+                            <Text style={{fontSize:16,color:'gray'}}>Lista de {route.params.categoria === '1' ? 'Compras' : route.params.categoria === '2' ? 'Tarefas' : 'Finanças'}</Text>
+                        <Text style={{fontSize:12,marginTop:4,color:'gray'}}>Criado por {route.params.username} em {route.params.data.substring(0,10)}</Text>
                         </View>
                     </View>
                     <View>
@@ -116,7 +187,7 @@ export default function ListaConfig()
                     </View>
                 </View>
                 <Divider style={{marginTop:20,marginBottom:20}} />
-                <Text style={{marginBottom:10}}>Compartilhar lista com:</Text>
+                <Text style={{marginBottom:10,color:'gray'}}>Compartilhar lista com:</Text>
                 <View style={{flexDirection:'row'}}>
                     <TextInput
                         returnKeyType="next"
@@ -129,7 +200,14 @@ export default function ListaConfig()
                     />
                     <TouchableOpacity onPress={adicionaNaLista}><Icon name='add' style={{marginLeft:20,marginBottom:6}} size={28} color='#5359D1' /></TouchableOpacity>
                 </View>
-                <Text style={{marginBottom:10, marginTop:15}}>Lista compartilhada com:</Text>
+                <Text style={{marginBottom:10, marginTop:15,color:'gray'}}>Lista compartilhada com:</Text>
+                <Divider style={{marginBottom:10,marginTop:10}} />
+            
+                <FlatList
+                    data={listaItens}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.id}
+                />
             </View>
         </SafeAreaView>
     </>

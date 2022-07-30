@@ -22,10 +22,10 @@ const BottomSheet = ({ modalRef, onClose }) => {
 
     const [nomeLista, setNomeLista] = useState('')
     const [categoria, setCategoria] = useState('')
-    const data = [{key:'1',value:'Compras'},{key:'2',value:'Tarefas'}];
+    const data = [{key:'1',value:'Compras'},{key:'2',value:'Tarefas'},{key:'3',value:'Finanças'}];
 
     
-    const {idUsuario} = useContext(GlobalContext)
+    const {idUsuario, usuario} = useContext(GlobalContext)
     const database = firebase.firestore()
 
 
@@ -35,6 +35,7 @@ const BottomSheet = ({ modalRef, onClose }) => {
             nome: nomeLista,
             categoria: categoria,
             user: idUsuario,
+            username: usuario,
             data: getData()
         })
         .then(() => {
@@ -69,10 +70,11 @@ const BottomSheet = ({ modalRef, onClose }) => {
             <SelectList 
                 setSelected={setCategoria} 
                 data={data} 
-                inputStyles={{fontSize:16, marginLeft:-10}} 
+                inputStyles={{fontSize:16, marginLeft:-10, backgroundColor:'white', color:'gray'}} 
+                dropdownTextStyles={{color:'gray'}}
                 onSelect={() => {}} 
                 search={false} 
-                boxStyles={{borderRadius:4}}  
+                boxStyles={{borderRadius:4, backgroundColor:'white', color:'gray'}}  
                 placeholder="Selecione a categoria"
             />
                 

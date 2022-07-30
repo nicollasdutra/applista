@@ -83,8 +83,8 @@ export default function Principal() {
           {usuario === undefined ? TabButton(currentTab, setCurrentTab, "Login", home, false ,'',showMenu,setShowMenu, offsetValue,scaleValue,closeButtonOffset) : usuario === '' ? TabButton(currentTab, setCurrentTab, "Login", home, false ,'',showMenu,setShowMenu, offsetValue,scaleValue,closeButtonOffset) : ''}
           {usuario === undefined ? '' : usuario === '' ? '' : TabButton(currentTab, setCurrentTab, "Minhas Listas", search, true, "md-list",showMenu,setShowMenu, offsetValue,scaleValue,closeButtonOffset)}
           {usuario === undefined ? '' : usuario === '' ? '' : TabButton(currentTab, setCurrentTab, "Compartilhadas", search, true, "md-list",showMenu,setShowMenu, offsetValue,scaleValue,closeButtonOffset)}
-          {usuario === undefined ? '' : usuario === '' ? '' : TabButton(currentTab, setCurrentTab, "Configurações", settings, false, '',showMenu,setShowMenu, offsetValue,scaleValue,closeButtonOffset)}
-
+          {/* {usuario === undefined ? '' : usuario === '' ? '' : TabButton(currentTab, setCurrentTab, "Configurações", settings, false, '',showMenu,setShowMenu, offsetValue,scaleValue,closeButtonOffset)}
+ */}
         </View>
 
         <View>
@@ -187,8 +187,8 @@ export default function Principal() {
           {currentTab === "Login" ? usuario === undefined ? <Login /> : usuario === '' ? <Login /> : <Listas /> : 
             currentTab === "Minhas Listas" ? usuario === undefined ? <Login /> : usuario === '' ? <Login /> : <Listas /> : 
               currentTab === "Compartilhadas" ? usuario === undefined ? <Login /> : usuario === '' ? <Login /> : <ListasShared /> : 
-                currentTab === "Configurações" ? usuario === undefined ? <Login /> : usuario === '' ? <Login /> : <Configuracoes /> : 
-
+                /* currentTab === "Configurações" ? usuario === undefined ? <Login /> : usuario === '' ? <Login /> : <Configuracoes /> : 
+ */
               ''
           }
           

@@ -79,7 +79,8 @@ export default function Login(){
                     id: item.id,
                     nome: item.data().nome,
                     categoria: item.data().categoria,
-                    data: item.data().data
+                    data: item.data().data,
+                    username: item.data().username
                   }) 
                 })
             });
